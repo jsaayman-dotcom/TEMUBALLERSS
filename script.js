@@ -50,10 +50,10 @@ const TEAM = {
     { player: "Alex", injury: "Ear injury", status: "Reported" }
   ],
 
-  teamOfWeek: {
-    player: "Jose",
-    gameweek: 1
-  },
+teamOfWeek: [
+  { player: "Jose", gameweek: 1 },
+  { player: "Jose", gameweek: 2 }
+],
 
   rules: [
     "A yellow card results in one shot.",
@@ -513,8 +513,22 @@ function renderRecords() {
   // Current shot rule: one shot per recorded card.
   $("#totalShots").textContent = greenTotal + yellowTotal;
 
-  $("#teamOfWeekPlayer").textContent =
-    TEAM.teamOfWeek.player.toUpperCase();
+const teamOfWeek = $("#teamOfWeekSelections");
+
+if (teamOfWeek) {
+  teamOfWeek.innerHTML = TEAM.teamOfWeek.map(selection => `
+    <div class="totw-player">
+      <span class="player-avatar player-avatar-large">
+        ${safeText(initials(selection.player))}
+      </span>
+      <div>
+        <span class="eyebrow">GAMEWEEK ${selection.gameweek}</span>
+        <h3>${safeText(selection.player.toUpperCase())}</h3>
+        <p>Recognising a performance for the club.</p>
+      </div>
+    </div>
+  `).join("");
+}
 
   const injuries = $("#injuriesList");
 
