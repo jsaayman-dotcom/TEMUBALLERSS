@@ -1,3 +1,4 @@
+
 "use strict";
 
 /* =====================================================
@@ -7,16 +8,16 @@
 
 const TEAM = {
   players: [
-    { name: "Josh",    appearances: 2, goals: 2, assists: 0, green: 0, yellow: 0 },
-    { name: "Ethan",   appearances: 2, goals: 0, assists: 1, green: 1, yellow: 0 },
-    { name: "Jose",    appearances: 2, goals: 0, assists: 2, green: 0, yellow: 0 },
-    { name: "Abdou",   appearances: 2, goals: 0, assists: 0, green: 0, yellow: 0 },
-    { name: "Adam",    appearances: 2, goals: 2, assists: 0, green: 2, yellow: 0 },
-    { name: "Alex",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0 },
-    { name: "Brandon", appearances: 2, goals: 0, assists: 0, green: 0, yellow: 0 },
-    { name: "Lathi",   appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0 },
-    { name: "Zach",    appearances: 2, goals: 1, assists: 0, green: 1, yellow: 1 },
-    { name: "Manu",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0 }
+    { name: "Josh",    appearances: 2, goals: 2, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Ethan",   appearances: 2, goals: 0, assists: 3, green: 1, yellow: 0, fines: 1 },
+    { name: "Jose",    appearances: 2, goals: 0, assists: 2, green: 0, yellow: 0, fines: 0 },
+    { name: "Abdou",   appearances: 2, goals: 3, assists: 0, green: 0, yellow: 0, fines: 1 },
+    { name: "Adam",    appearances: 2, goals: 2, assists: 0, green: 2, yellow: 0, fines: 1 },
+    { name: "Alex",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 2 },
+    { name: "Brandon", appearances: 2, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Lathi",   appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Zach",    appearances: 2, goals: 1, assists: 1, green: 1, yellow: 1, fines: 3 },
+    { name: "Manu",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 }
   ],
 
   results: [
@@ -25,19 +26,26 @@ const TEAM = {
       teamGoals: 3,
       opponentGoals: 3,
       scorers: ["Josh", "Zach", "Adam"],
-      date: 0
+      date: null
     },
     {
       opponent: "FC Sparta",
       teamGoals: 2,
       opponentGoals: 1,
       scorers: ["Josh", "Adam"],
-      date: 0
+      date: null
+    },
+    {
+      opponent: "Super Strikers",
+      teamGoals: 3,
+      opponentGoals: 0,
+      scorers: ["Abdou"],
+      assists: ["Ethan", "Ethan", "Zach"],
+      date: "2026-11-04"
     }
   ],
 
   fixtures: [
-    { date: "2026-11-04", time: "18:15", opponent: "Superstrikers", venue: "Fairview Action Arena" },
     { date: "2026-11-11", time: "20:30", opponent: "Depot Utd FC", venue: "Fairview Action Arena" },
     { date: "2026-11-18", time: "19:00", opponent: "Von-Boeties FC", venue: "Fairview Action Arena" },
     { date: "2026-11-25", time: "18:15", opponent: "Teknology FC", venue: "Fairview Action Arena" },
@@ -50,10 +58,10 @@ const TEAM = {
     { player: "Alex", injury: "Ear injury", status: "Reported" }
   ],
 
-teamOfWeek: [
-  { player: "Jose", gameweek: 1 },
-  { player: "Jose", gameweek: 2 }
-],
+  teamOfWeek: [
+    { player: "Jose", gameweek: 1 },
+    { player: "Jose", gameweek: 2 }
+  ],
 
   rules: [
     "A yellow card results in one shot.",
@@ -96,7 +104,8 @@ function getStats(player) {
     assists,
     contributions: goals + assists,
     green: Number(player.green) || 0,
-    yellow: Number(player.yellow) || 0
+    yellow: Number(player.yellow) || 0,
+    fines: Number(player.fines) || 0
   };
 }
 
@@ -217,73 +226,122 @@ function renderSeasonStats() {
    MATCH CENTRE
    ===================================================== */
 
+function localDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function renderMatches() {
   const resultsBody = $("#resultsTable");
   const fixturesBody = $("#fixturesTable");
 
+  const sortedResults = TEAM.results
+    .map((match, index) => ({ ...match, _order: index }))
+    .sort((a, b) => {
+      if (a.date && b.date) return b.date.localeCompare(a.date);
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return b._order - a._order;
+    });
+
+  const today = localDateKey();
+
+  const upcomingFixtures = TEAM.fixtures
+    .filter(fixture => fixture.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
   if (resultsBody) {
-    resultsBody.innerHTML = [...TEAM.results].reverse().map(match => `
+    resultsBody.innerHTML = sortedResults.map(match => `
       <tr>
         <td>${safeText(match.opponent)}</td>
         <td>${match.teamGoals}–${match.opponentGoals}</td>
         <td>${resultOutcome(match)}</td>
         <td>${match.scorers.length
           ? match.scorers.map(safeText).join(", ")
-          : "0"}</td>
+          : "Not recorded"}</td>
       </tr>
     `).join("");
   }
 
   if (fixturesBody) {
-    fixturesBody.innerHTML = TEAM.fixtures.map(fixture => `
-      <tr>
-        <td>${formatDate(fixture.date, true)}</td>
-        <td>${safeText(fixture.time)}</td>
-        <td>${safeText(fixture.opponent)}</td>
-        <td>${safeText(fixture.venue)}</td>
-      </tr>
-    `).join("");
+    fixturesBody.innerHTML = upcomingFixtures.length
+      ? upcomingFixtures.map(fixture => `
+        <tr>
+          <td>${formatDate(fixture.date, true)}</td>
+          <td>${safeText(fixture.time)}</td>
+          <td>${safeText(fixture.opponent)}</td>
+          <td>${safeText(fixture.venue)}</td>
+        </tr>
+      `).join("")
+      : `<tr><td colspan="4">No upcoming fixtures currently listed.</td></tr>`;
   }
 
-  // The last result in the current dataset is the most recent
-  // result entered. No match date is invented.
-  const latest = TEAM.results[TEAM.results.length - 1];
+  const latest = sortedResults[0];
 
   if (latest) {
     const mount = $("#latestResult");
 
     if (mount) {
+      const assistCounts = (latest.assists || []).reduce((counts, name) => {
+        counts[name] = (counts[name] || 0) + 1;
+        return counts;
+      }, {});
+
+      const assistText = Object.entries(assistCounts)
+        .map(([name, count]) =>
+          `${safeText(name)}${count > 1 ? ` (${count})` : ""}`
+        )
+        .join(", ");
+
       mount.innerHTML = `
         <div class="scoreboard">
           <div class="team-side">
             <span class="mini-crest">TB</span>
             <strong>TEMU BALLERS</strong>
           </div>
-          <div class="score">${latest.teamGoals} <span>–</span> ${latest.opponentGoals}</div>
+
+          <div class="score">
+            ${latest.teamGoals} <span>–</span> ${latest.opponentGoals}
+          </div>
+
           <div class="opponent-side">
             <strong>${safeText(latest.opponent.toUpperCase())}</strong>
             <span class="opponent-crest">FC</span>
           </div>
         </div>
+
         <p class="match-meta">
+          ${latest.date ? `Played: ${formatDate(latest.date, true)} · ` : ""}
           Scorers: ${latest.scorers.length
             ? latest.scorers.map(safeText).join(", ")
-            : "0"}
+            : "Not recorded"}
+          ${assistText ? `<br>Assists: ${assistText}` : ""}
         </p>
       `;
     }
   }
 
-  const next = TEAM.fixtures[0];
+  const next = upcomingFixtures[0];
+
+  const nextOpponent = $("#nextOpponent");
+  const nextDate = $("#nextDate");
+  const nextTime = $("#nextTime");
+  const nextVenue = $("#nextVenue");
 
   if (next) {
-    $("#nextOpponent").textContent = next.opponent.toUpperCase();
-    $("#nextDate").textContent = formatDate(next.date, true).toUpperCase();
-    $("#nextTime").textContent = next.time;
-    $("#nextVenue").textContent = next.venue;
+    if (nextOpponent) nextOpponent.textContent = next.opponent.toUpperCase();
+    if (nextDate) nextDate.textContent = formatDate(next.date, true).toUpperCase();
+    if (nextTime) nextTime.textContent = next.time;
+    if (nextVenue) nextVenue.textContent = next.venue;
+  } else {
+    if (nextOpponent) nextOpponent.textContent = "TO BE ANNOUNCED";
+    if (nextDate) nextDate.textContent = "TBC";
+    if (nextTime) nextTime.textContent = "TBC";
+    if (nextVenue) nextVenue.textContent = "Awaiting fixture announcement";
   }
 }
-
 
 /* =====================================================
    PLAYER CARDS AND SEARCH
@@ -364,6 +422,7 @@ function openPlayerProfile(name) {
         <div class="profile-stat"><strong>${s.green}</strong><span>Green cards</span></div>
         <div class="profile-stat"><strong>${s.yellow}</strong><span>Yellow cards</span></div>
       </div>
+
       <p style="font-size:11px;margin-top:17px">
         Player statistics reflect the current Temu Ballers dataset.
       </p>
@@ -492,7 +551,6 @@ function renderStatistics() {
   draw();
 }
 
-
 /* =====================================================
    CLUB RECORDS
    ===================================================== */
@@ -513,22 +571,22 @@ function renderRecords() {
   // Current shot rule: one shot per recorded card.
   $("#totalShots").textContent = greenTotal + yellowTotal;
 
-const teamOfWeek = $("#teamOfWeekSelections");
+  const teamOfWeek = $("#teamOfWeekSelections");
 
-if (teamOfWeek) {
-  teamOfWeek.innerHTML = TEAM.teamOfWeek.map(selection => `
-    <div class="totw-player">
-      <span class="player-avatar player-avatar-large">
-        ${safeText(initials(selection.player))}
-      </span>
-      <div>
-        <span class="eyebrow">GAMEWEEK ${selection.gameweek}</span>
-        <h3>${safeText(selection.player.toUpperCase())}</h3>
-        <p>Recognising a performance for the club.</p>
+  if (teamOfWeek) {
+    teamOfWeek.innerHTML = TEAM.teamOfWeek.map(selection => `
+      <div class="totw-player">
+        <span class="player-avatar player-avatar-large">
+          ${safeText(initials(selection.player))}
+        </span>
+        <div>
+          <span class="eyebrow">GAMEWEEK ${selection.gameweek}</span>
+          <h3>${safeText(selection.player.toUpperCase())}</h3>
+          <p>Recognising a performance for the club.</p>
+        </div>
       </div>
-    </div>
-  `).join("");
-}
+    `).join("");
+  }
 
   const injuries = $("#injuriesList");
 
@@ -563,7 +621,7 @@ if (teamOfWeek) {
           <td>${safeText(player.name)}</td>
           <td>${s.green}</td>
           <td>${s.yellow}</td>
-          <td>0</td>
+          <td>${s.fines}</td>
         </tr>
       `;
     }).join("");
@@ -582,8 +640,13 @@ function setupNavigation() {
   if (toggle && nav) {
     toggle.addEventListener("click", () => {
       const open = nav.classList.toggle("open");
+
       toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+      toggle.setAttribute(
+        "aria-label",
+        open ? "Close navigation" : "Open navigation"
+      );
+
       toggle.textContent = open ? "×" : "☰";
     });
 
