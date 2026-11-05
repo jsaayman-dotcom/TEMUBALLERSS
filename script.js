@@ -8,15 +8,15 @@
 
 const TEAM = {
   players: [
-    { name: "Josh",    appearances: 2, goals: 2, assists: 0, green: 0, yellow: 0, fines: 0 },
-    { name: "Ethan",   appearances: 2, goals: 0, assists: 3, green: 1, yellow: 0, fines: 1 },
-    { name: "Jose",    appearances: 2, goals: 0, assists: 2, green: 0, yellow: 0, fines: 0 },
-    { name: "Abdou",   appearances: 2, goals: 3, assists: 0, green: 0, yellow: 0, fines: 1 },
-    { name: "Adam",    appearances: 2, goals: 2, assists: 0, green: 2, yellow: 0, fines: 1 },
-    { name: "Alex",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 2 },
-    { name: "Brandon", appearances: 2, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
-    { name: "Lathi",   appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
-    { name: "Zach",    appearances: 2, goals: 1, assists: 1, green: 1, yellow: 1, fines: 3 },
+    { name: "Josh",    appearances: 3, goals: 2, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Ethan",   appearances: 3, goals: 0, assists: 3, green: 1, yellow: 0, fines: 1 },
+    { name: "Jose",    appearances: 3, goals: 0, assists: 2, green: 0, yellow: 0, fines: 0 },
+    { name: "Abdou",   appearances: 3, goals: 3, assists: 0, green: 0, yellow: 0, fines: 1 },
+    { name: "Adam",    appearances: 3, goals: 2, assists: 0, green: 2, yellow: 0, fines: 1 },
+    { name: "Alex",    appearances: 1, goals: 0, assists: 0, green: 0, yellow: 0, fines: 2 },
+    { name: "Brandon", appearances: 3, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Lathi",   appearances: 1, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Zach",    appearances: 3, goals: 1, assists: 1, green: 1, yellow: 1, fines: 3 },
     { name: "Manu",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 }
   ],
 
