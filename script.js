@@ -26,14 +26,16 @@ const TEAM = {
       teamGoals: 3,
       opponentGoals: 3,
       scorers: ["Josh", "Zach", "Adam"],
-      date: null
+      date: "2026-10-21",
+      gameweek: 1
     },
     {
       opponent: "FC Sparta",
       teamGoals: 2,
       opponentGoals: 1,
       scorers: ["Josh", "Adam"],
-      date: null
+      date: "2026-10-28",
+      gameweek: 2
     },
     {
       opponent: "Super Strikers",
