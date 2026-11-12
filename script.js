@@ -8,14 +8,14 @@
 
 const TEAM = {
   players: [
-    { name: "Josh",    appearances: 3, goals: 2, assists: 0, green: 0, yellow: 0, fines: 0 },
-    { name: "Ethan",   appearances: 3, goals: 0, assists: 3, green: 1, yellow: 0, fines: 1 },
-    { name: "Jose",    appearances: 3, goals: 0, assists: 2, green: 0, yellow: 0, fines: 0 },
-    { name: "Abdou",   appearances: 3, goals: 3, assists: 0, green: 0, yellow: 0, fines: 1 },
-    { name: "Adam",    appearances: 3, goals: 2, assists: 0, green: 2, yellow: 0, fines: 1 },
-    { name: "Alex",    appearances: 1, goals: 0, assists: 0, green: 0, yellow: 0, fines: 2 },
-    { name: "Brandon", appearances: 3, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
-    { name: "Lathi",   appearances: 1, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Josh",    appearances: 4, goals: 4, assists: 2, green: 0, yellow: 0, fines: 0 },
+    { name: "Ethan",   appearances: 4, goals: 1, assists: 6, green: 1, yellow: 0, fines: 1 },
+    { name: "Jose",    appearances: 4, goals: 1, assists: 3, green: 0, yellow: 0, fines: 0 },
+    { name: "Abdou",   appearances: 4, goals: 5, assists: 1, green: 0, yellow: 0, fines: 1 },
+    { name: "Adam",    appearances: 4, goals: 6, assists: 2, green: 2, yellow: 0, fines: 1 },
+    { name: "Alex",    appearances: 2, goals: 0, assists: 1, green: 0, yellow: 0, fines: 2 },
+    { name: "Brandon", appearances: 4, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 },
+    { name: "Lathi",   appearances: 2, goals: 2, assists: 2, green: 0, yellow: 0, fines: 0 },
     { name: "Zach",    appearances: 3, goals: 1, assists: 1, green: 1, yellow: 1, fines: 3 },
     { name: "Manu",    appearances: 0, goals: 0, assists: 0, green: 0, yellow: 0, fines: 0 }
   ],
@@ -39,9 +39,19 @@ const TEAM = {
       opponent: "Super Strikers",
       teamGoals: 3,
       opponentGoals: 0,
-      scorers: ["Abdou"],
+      scorers: ["Abdou (3)"],
       assists: ["Ethan", "Ethan", "Zach"],
-      date: "2026-11-04"
+      date: "2026-11-04",
+      gameweek: 3
+    },
+    {
+      opponent: "Depot United",
+      teamGoals: 12,
+      opponentGoals: 0,
+      scorers: ["Adam (4)", "Abdou (2)", "Josh (2)", "Lathi (2)", "Ethan", "Jose"],
+      assists: ["Adam", "Adam", "Abdou", "Josh", "Josh", "Lathi", "Lathi", "Ethan", "Ethan", "Ethan", "Jose", "Alex"],
+      date: "2026-11-11",
+      gameweek: 4
     }
   ],
 
@@ -60,7 +70,8 @@ const TEAM = {
 
   teamOfWeek: [
     { player: "Jose", gameweek: 1 },
-    { player: "Jose", gameweek: 2 }
+    { player: "Jose", gameweek: 2 },
+    { player: "Ethan", gameweek: 3 }
   ],
 
   rules: [
@@ -258,9 +269,22 @@ function renderMatches() {
         <td>${safeText(match.opponent)}</td>
         <td>${match.teamGoals}–${match.opponentGoals}</td>
         <td>${resultOutcome(match)}</td>
-        <td>${match.scorers.length
-          ? match.scorers.map(safeText).join(", ")
-          : "Not recorded"}</td>
+        <td>
+          <strong>Goals:</strong> ${match.scorers.length
+            ? match.scorers.map(safeText).join(", ")
+            : "Not recorded"}
+          ${match.assists?.length
+            ? `<br><span class="result-assists"><strong>Assists:</strong> ${(() => {
+                const counts = match.assists.reduce((map, name) => {
+                  map[name] = (map[name] || 0) + 1;
+                  return map;
+                }, {});
+                return Object.entries(counts).map(([name, count]) =>
+                  `${safeText(name)}${count > 1 ? ` (${count})` : ""}`
+                ).join(", ");
+              })()}</span>`
+            : ""}
+        </td>
       </tr>
     `).join("");
   }
@@ -457,7 +481,6 @@ function setupPlayerProfiles() {
   });
 }
 
-
 /* =====================================================
    LEADERBOARDS
    Every player is included, even on zero.
@@ -627,7 +650,6 @@ function renderRecords() {
     }).join("");
   }
 }
-
 
 /* =====================================================
    NAVIGATION
