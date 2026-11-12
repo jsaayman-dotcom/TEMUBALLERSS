@@ -478,6 +478,7 @@ main {
 }
 
 .stat-card-accent {
+
   background: linear-gradient(145deg, rgba(135, 206, 235, 0.17), rgba(19, 38, 51, 0.8));
   border-color: rgba(135, 206, 235, 0.35);
 }
@@ -958,6 +959,7 @@ main {
   margin-top: 16px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 16px;
 }
 
